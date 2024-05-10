@@ -8,7 +8,6 @@ exports.getProducts = (req, res, next) => {
         prods: products,
         pageTitle: "All Products",
         path: "/",
-        isAuthenticated:req.isLoggedIn
       });
     })
     .catch((err) => console.log(err));
@@ -21,7 +20,6 @@ exports.getProduct = (req, res, next) => {
         product: product,
         pageTitle: product.title,
         path: "/products",
-        isAuthenticated:req.session.isLoggedIn
       });
     })
     .catch((err) => console.log(err));
@@ -33,7 +31,6 @@ exports.getIndex = (req, res, next) => {
         prods: products,
         pageTitle: "Shop",
         path: "/",
-        isAuthenticated:req.session.isLoggedIn
       });
     })
     .catch((err) => console.log(err));
@@ -47,7 +44,6 @@ exports.getCart = (req, res, next) => {
             path: "/cart",
             pageTitle: "Your Cart",
             products: products,
-            isAuthenticated:req.session.isLoggedIn
           });
         })
         .catch((err) => console.log(err));
@@ -66,7 +62,7 @@ exports.postCart = (req, res, next) => {
 };
 exports.postCartDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  req.session.user
+  req.user
     .removeFromCart(prodId)
     .then(result => {
       res.redirect('/cart');
@@ -74,7 +70,7 @@ exports.postCartDeleteProduct = (req, res, next) => {
     .catch(err => console.log(err));
 };
 exports.postOrder = (req, res, next) => {
-  req.session.user
+  req.user
     .populate('cart.items.productId')
     .then(user => {
       const products = user.cart.items.map(i => {
@@ -82,7 +78,7 @@ exports.postOrder = (req, res, next) => {
       });
       const order = new Order({
         user: {
-          name: req.user.name,
+          email: req.user.email,
           userId: req.user
         },
         products: products
@@ -103,7 +99,6 @@ exports.getOrders = (req, res, next) => {
         path: '/orders',
         pageTitle: 'Your Orders',
         orders: orders,
-        isAuthenticated:req.session.isLoggedIn
       });
     })
     .catch(err => console.log(err));
