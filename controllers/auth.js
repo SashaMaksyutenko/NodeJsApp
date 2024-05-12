@@ -4,7 +4,8 @@ const User = require("../models/user");
 const sendgridTransport = require("nodemailer-sendgrid-transport");
 const transporter=nodeMailer.createTransport(sendgridTransport({
   auth:{
-    api_key:''
+    user: process.env.SENDGRID_USER,
+    pass: process.env.SENDGRID_PASS,
   }
 }));
 exports.getLogin = (req, res, next) => {
@@ -87,7 +88,7 @@ exports.postSignup = (req, res, next) => {
           res.redirect("/login");
           return transporter.sendMail({
             to:email,
-            from:'shop@node-complete.com',
+            from: process.env.SENDGRID_USER,
             subject:'signup succeeded',
             html:'<h1>You successfully signed up</h1>'
           });
