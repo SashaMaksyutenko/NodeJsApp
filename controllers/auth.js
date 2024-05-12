@@ -1,8 +1,9 @@
 const bcrypt = require("bcryptjs");
 const nodeMailer = require("nodemailer");
 const User = require("../models/user");
+const dotenv = require('dotenv');
 const mailjetTransport = require("nodemailer-mailjet-transport");
-
+dotenv.config();
 const transporter = nodeMailer.createTransport(
   mailjetTransport({
     auth: {
@@ -97,7 +98,7 @@ exports.postSignup = (req, res, next) => {
             to: email,
             from: process.env.SENDER_EMAIL,
             subject: "Signup succeeded",
-            html: "<h1>You successfully signed up</h1>",
+            html: "<h1>You successfully signed up. You are not a pigeon</h1>",
           });
         }).catch(err => {
           console.log(err);
