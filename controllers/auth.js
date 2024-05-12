@@ -1,46 +1,52 @@
 const bcrypt = require("bcryptjs");
-const nodeMailer=require("nodemailer");
+const nodeMailer = require("nodemailer");
 const User = require("../models/user");
-const sendgridTransport = require("nodemailer-sendgrid-transport");
-const transporter=nodeMailer.createTransport(sendgridTransport({
-  auth:{
-    user: process.env.SENDGRID_USER,
-    pass: process.env.SENDGRID_PASS,
-  }
-}));
+const mailjetTransport = require("nodemailer-mailjet-transport");
+
+const transporter = nodeMailer.createTransport(
+  mailjetTransport({
+    auth: {
+      apiKey: process.env.MAILJET_API_KEY,
+      apiSecret: process.env.MAILJET_API_SECRET,
+    },
+  })
+);
+
 exports.getLogin = (req, res, next) => {
-  let message=req.flash('error');
-  if(message.length>0){
-    message=message[0];
-  }else{
-    message=null;
+  let message = req.flash("error");
+  if (message.length > 0) {
+    message = message[0];
+  } else {
+    message = null;
   }
   res.render("auth/login", {
     path: "/login",
     pageTitle: "Login",
-    errorMessage:message
+    errorMessage: message,
   });
 };
+
 exports.getSignup = (req, res, next) => {
-  let message=req.flash('error');
-  if(message.length>0){
-    message=message[0];
-  }else{
-    message=null;
+  let message = req.flash("error");
+  if (message.length > 0) {
+    message = message[0];
+  } else {
+    message = null;
   }
   res.render("auth/signup", {
     path: "/signup",
     pageTitle: "Signup",
-    errorMessage:message
+    errorMessage: message,
   });
 };
+
 exports.postLogin = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
   User.findOne({ email: email })
     .then((user) => {
       if (!user) {
-        req.flash('error','Invalid email or password');
+        req.flash("error", "Invalid email or password");
         return res.redirect("/login");
       }
       bcrypt
@@ -54,7 +60,7 @@ exports.postLogin = (req, res, next) => {
               res.redirect("/");
             });
           }
-          req.flash('error','Invalid email or password');
+          req.flash("error", "Invalid email or password");
           res.redirect("/login");
         })
         .catch((err) => {
@@ -64,6 +70,7 @@ exports.postLogin = (req, res, next) => {
     })
     .catch((err) => console.log(err));
 };
+
 exports.postSignup = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -71,7 +78,7 @@ exports.postSignup = (req, res, next) => {
   User.findOne({ email: email })
     .then((userDoc) => {
       if (userDoc) {
-        req.flash('error','E-Mail is already exists, please pick a different E-Mail');
+        req.flash("error", "E-Mail is already exists, please pick a different E-Mail");
         return res.redirect("/signup");
       }
       return bcrypt
@@ -87,17 +94,18 @@ exports.postSignup = (req, res, next) => {
         .then((result) => {
           res.redirect("/login");
           return transporter.sendMail({
-            to:email,
-            from: process.env.SENDGRID_USER,
-            subject:'signup succeeded',
-            html:'<h1>You successfully signed up</h1>'
+            to: email,
+            from: process.env.SENDER_EMAIL,
+            subject: "Signup succeeded",
+            html: "<h1>You successfully signed up</h1>",
           });
-        }).catch(err=>{
+        }).catch(err => {
           console.log(err);
         });
     })
     .catch((err) => console.log(err));
 };
+
 exports.postLogout = (req, res, next) => {
   req.session.destroy((err) => {
     console.log(err);
