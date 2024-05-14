@@ -1,23 +1,52 @@
 <%- include('../includes/head.ejs') %>
-    <link rel="stylesheet" href="/css/forms.css">
-    <link rel="stylesheet" href="/css/auth.css">
+<link rel="stylesheet" href="/css/forms.css">
+<link rel="stylesheet" href="/css/auth.css">
 </head>
 
 <body>
    <%- include('../includes/navigation.ejs') %>
-
     <main>
-        <% if (errorMessage) { %>
-            <div class="user-message user-message--error"><%= errorMessage %></div>
+        <% if (errorMessage && Array.isArray(errorMessage)) { %>
+            <div class="user-message user-message--error">
+                <ul>
+                    <% errorMessage.forEach(e => { %>
+                        <li><%= e.msg %></li>
+                    <% }); %>
+                </ul>
+            </div>
         <% } %>
         <form class="login-form" action="/login" method="POST">
             <div class="form-control">
                 <label for="email">E-Mail</label>
-                <input type="email" name="email" id="email">
+                <input 
+                    class="<%= validationErrors.find(e => e.path === 'email') ? 'invalid' : '' %>"
+                    type="email" 
+                    name="email" 
+                    id="email" 
+                    value="<%= oldInput.email %>">
+                <% if (errorMessage && Array.isArray(errorMessage)) { %>
+                    <% errorMessage.forEach(e => { %>
+                        <% if (e.param === 'email') { %>
+                            <p class="error-message"><%= e.msg %></p>
+                        <% } %>
+                    <% }); %>
+                <% } %>
             </div>
             <div class="form-control">
                 <label for="password">Password</label>
-                <input type="password" name="password" id="password">
+                <input 
+                    class="<%= validationErrors.find(e => e.path === 'password') ? 'invalid' : '' %>"
+                    type="password" 
+                    name="password" 
+                    id="password" 
+                    value="<%= oldInput.password %>">
+                <% if (errorMessage && Array.isArray(errorMessage)) { %>
+                    <% errorMessage.forEach(e => { %>
+                        <% if (e.param === 'password') { %>
+                            <p class="error-message"><%= e.msg %></p>
+                        <% } %>
+                    <% }); %>
+                <% } %>
             </div>
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <button class="btn" type="submit">Login</button>
