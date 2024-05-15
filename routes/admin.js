@@ -2,7 +2,8 @@ const path = require("path");
 const express = require("express");
 const isAuth = require("../middleware/is-auth");
 const adminController = require("../controllers/admin");
-const expressValidator = require("express-validator");
+//const expressValidator = require("express-validator");
+const { body } = require('express-validator');
 const { title } = require("process");
 const router = express.Router();
 router.get("/add-product", isAuth, adminController.getAddProduct);
@@ -10,10 +11,10 @@ router.get("/products", isAuth, adminController.getProducts);
 router.post(
   "/add-product",
   [
-    expressValidator.body("title").isString().isLength({ min: 3 }).trim(),
-    expressValidator.body("imageUrl").isURL(),
-    expressValidator.body("price").isFloat(),
-    expressValidator.body("description").isLength({ min: 5, max: 400 }).trim(),
+    body("title").isString().isLength({ min: 3 }).trim(),
+    body("imageUrl").isURL(),
+    body("price").isFloat(),
+    body("description").isLength({ min: 5, max: 400 }).trim(),
   ],
   isAuth,
   adminController.postAddProduct
@@ -25,10 +26,10 @@ router.get(
   adminController.getEditProduct
 );
 router.post("/edit-product", [
-    expressValidator.body("title").isString().isLength({ min: 3 }).trim(),
-    expressValidator.body("imageUrl").isURL(),
-    expressValidator.body("price").isFloat(),
-    expressValidator.body("description").isLength({ min: 5, max: 400 }).trim(),
+    body("title").isString().isLength({ min: 3 }).trim(),
+    body("imageUrl").isURL(),
+    body("price").isFloat(),
+    body("description").isLength({ min: 5, max: 400 }).trim(),
   ],
   isAuth, 
   adminController.postEditProduct);
