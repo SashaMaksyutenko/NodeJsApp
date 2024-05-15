@@ -1,6 +1,6 @@
 const Product = require("../models/product");
-const { validationResult } = require('express-validator');
-
+const { validationResult } = require("express-validator");
+const mongoose = require("mongoose");
 exports.getAddProduct = (req, res, next) => {
   if (!req.session.isLoggedIn) {
     return res.redirect("/login");
@@ -11,7 +11,7 @@ exports.getAddProduct = (req, res, next) => {
     editing: false,
     hasError: false,
     errorMessage: null,
-    validationErrors: []
+    validationErrors: [],
   });
 };
 
@@ -23,9 +23,9 @@ exports.postAddProduct = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     console.log(errors.array());
-    return res.status(422).render('admin/edit-product', {
-      pageTitle: 'Add Product',
-      path: '/admin/edit-product',
+    return res.status(422).render("admin/edit-product", {
+      pageTitle: "Add Product",
+      path: "/admin/add-product",
       editing: false,
       hasError: true,
       product: {
@@ -48,12 +48,15 @@ exports.postAddProduct = (req, res, next) => {
   product
     .save()
     .then((result) => {
-      console.log('Created Product');
-      res.redirect('/admin/products');
+      console.log("Created Product");
+      res.redirect("/admin/products");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error=new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
-
 exports.getEditProduct = (req, res, next) => {
   const editMode = req.query.edit;
   if (!editMode) {
@@ -72,12 +75,15 @@ exports.getEditProduct = (req, res, next) => {
         product: product,
         hasError: false,
         errorMessage: null,
-        validationErrors: []
+        validationErrors: [],
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error=new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
-
 exports.postEditProduct = (req, res, next) => {
   const prodId = req.body.productId;
   const updatedTitle = req.body.title;
@@ -87,9 +93,9 @@ exports.postEditProduct = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     console.log(errors.array());
-    return res.status(422).render('admin/edit-product', {
-      pageTitle: 'Edit Product',
-      path: '/admin/edit-product',
+    return res.status(422).render("admin/edit-product", {
+      pageTitle: "Edit Product",
+      path: "/admin/edit-product",
       editing: true,
       hasError: true,
       product: {
@@ -97,7 +103,7 @@ exports.postEditProduct = (req, res, next) => {
         imageUrl: updatedImageUrl,
         price: updatedPrice,
         description: updatedDesc,
-        _id: prodId
+        _id: prodId,
       },
       errorMessage: errors.array(),
       validationErrors: errors.array(),
@@ -117,9 +123,12 @@ exports.postEditProduct = (req, res, next) => {
         res.redirect("/admin/products");
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error=new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
-
 exports.getProducts = (req, res, next) => {
   Product.find({ userId: req.user._id })
     .then((products) => {
@@ -130,9 +139,12 @@ exports.getProducts = (req, res, next) => {
         path: "/admin/products",
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error=new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
-
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
   Product.deleteOne({ _id: prodId, userId: req.user._id })
@@ -140,5 +152,9 @@ exports.postDeleteProduct = (req, res, next) => {
       console.log("destroyed product");
       res.redirect("/admin/products");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error=new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
