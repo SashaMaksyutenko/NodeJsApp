@@ -20,15 +20,17 @@ router.post(
 );
 router.get(
   "/edit-product/:productId",
-  [
-    expressValidator.body("title").isAlphanumeric().isLength({ min: 3 }).trim(),
+  
+  isAuth,
+  adminController.getEditProduct
+);
+router.post("/edit-product", [
+    expressValidator.body("title").isString().isLength({ min: 3 }).trim(),
     expressValidator.body("imageUrl").isURL(),
     expressValidator.body("price").isFloat(),
     expressValidator.body("description").isLength({ min: 5, max: 400 }).trim(),
   ],
-  isAuth,
-  adminController.getEditProduct
-);
-router.post("/edit-product", isAuth, adminController.postEditroduct);
+  isAuth, 
+  adminController.postEditProduct);
 router.post("/delete-product", isAuth, adminController.postDeleteProduct);
 module.exports = router;
