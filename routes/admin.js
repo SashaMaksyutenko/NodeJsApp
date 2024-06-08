@@ -2,7 +2,6 @@ const path = require("path");
 const express = require("express");
 const isAuth = require("../middleware/is-auth");
 const adminController = require("../controllers/admin");
-//const expressValidator = require("express-validator");
 const { body } = require('express-validator');
 const { title } = require("process");
 const router = express.Router();

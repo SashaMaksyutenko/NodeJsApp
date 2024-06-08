@@ -5,7 +5,7 @@ const Order = require("../models/order");
 const PDFDocument = require("pdfkit");
 const { where } = require("sequelize");
 const stripe = require("stripe")(
-  "sk_test_51LzQzCDhXjHNMx1O5bqxSlcQ9Gt6LvFS2oOlwD9x1OFc9c3C3kN03N0js73JF9gf9MU7lGRHiFMQXQtsUU6DioEe00i5OHpuO3"
+  process.env.STRIPE_KEY
 );
 const ITEMS_PER_PAGE = 2;
 exports.getProducts = (req, res, next) => {
