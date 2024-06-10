@@ -13,5 +13,6 @@ npm-debug.log
 # Logs and databases
 *.log
 *.sql
+nodemon.json
 
 
