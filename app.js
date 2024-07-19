@@ -20,7 +20,6 @@ const compression = require('compression')
 const morgan = require('morgan')
 require('dotenv').config()
 const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.jevii2h.mongodb.net/${process.env.MONGO_DEFAULT_DATABASE}?retryWrites=true&w=majority&appName=Cluster0&authSource=admin`
-//const MONGODB_URI = "mongodb+srv://sashamaksyutenko:7Alm9KVFRzXGBjzR@cluster0.jevii2h.mongodb.net/shop?retryWrites=true&w=majority&appName=Cluster0&authSource=admin"
 const store = new MongoDbStore({
   uri: MONGODB_URI,
   collection: 'sessions'
@@ -120,10 +119,10 @@ app.use((error, req, res, next) => {
 mongoose
   .connect(MONGODB_URI)
   .then(result => {
-    https
-      .createServer({ key: privateKey, cert: certificate }, app)
-      .listen(process.env.PORT || 3000)
-      //app.listen(process.env.PORT || 3000)
+    // https
+    //   .createServer({ key: privateKey, cert: certificate }, app)
+    //   .listen(process.env.PORT || 3000)
+      app.listen(process.env.PORT || 3000)
   })
   .catch(err => {
     console.log(err)
